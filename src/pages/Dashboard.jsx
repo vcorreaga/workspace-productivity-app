@@ -8,6 +8,8 @@ function Dashboard() {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    const [filter, setFilter] = useState("Todas");
+
     const [tasks, setTasks] = useState(() => {
         const savedTasks = localStorage.getItem("tasks");
 
@@ -64,6 +66,19 @@ function Dashboard() {
         (completedTasks / tasks.length) * 100
     );
 
+    const filteredTasks = tasks.filter((task) => {
+
+        if (filter === "Pendientes") {
+            return task.status !== "Completada";
+        }
+
+        if (filter === "Completadas") {
+            return task.status === "Completada";
+        }
+
+        return true;
+    });
+
     return (
         <div className="min-h-screen bg-slate-950 text-white p-8">
 
@@ -106,9 +121,46 @@ function Dashboard() {
 
                         </div>
 
+                        <div className="flex gap-3 mt-6">
+
+                            <button
+                                onClick={() => setFilter("Todas")}
+                                className={`px-4 py-2 rounded-xl text-sm ${
+                                    filter === "Todas"
+                                        ? "bg-lime-400 text-slate-950"
+                                        : "bg-slate-800 text-white"
+                                }`}
+                            >
+                                Todas
+                            </button>
+
+                            <button
+                                onClick={() => setFilter("Pendientes")}
+                                className={`px-4 py-2 rounded-xl text-sm ${
+                                    filter === "Pendientes"
+                                        ? "bg-lime-400 text-slate-950"
+                                        : "bg-slate-800 text-white"
+                                }`}
+                            >
+                                Pendientes
+                            </button>
+
+                            <button
+                                onClick={() => setFilter("Completadas")}
+                                className={`px-4 py-2 rounded-xl text-sm ${
+                                    filter === "Completadas"
+                                        ? "bg-lime-400 text-slate-950"
+                                        : "bg-slate-800 text-white"
+                                }`}
+                            >
+                                Completadas
+                            </button>
+
+                        </div>
+
                         <div className="mt-8 space-y-4">
 
-                            {tasks.map((task) => (
+                            {filteredTasks.map((task) => (
                                 <TaskCard
                                     key={task.id}
                                     id={task.id}

@@ -15,28 +15,42 @@ function TaskCard({
 
   return (
     <div
-      className={`border rounded-2xl p-5 transition-all ${status === "Completada"
-        ? "bg-lime-500/10 border-lime-500"
-        : "bg-slate-800 border-slate-700"
-        }`}
+      className={`border rounded-2xl p-5 transition-all ${
+        status === "Completada"
+          ? "bg-lime-500/10 border-lime-500"
+          : "bg-slate-800 border-slate-700"
+      }`}
     >
 
       <div className="flex items-start justify-between">
 
         <div>
 
-          <h3 className="text-lg font-semibold text-white">
+          <h3
+            className={`text-lg font-semibold ${
+              status === "Completada"
+                ? "line-through text-slate-500"
+                : "text-white"
+            }`}
+          >
             {title}
           </h3>
 
-          <p className="text-slate-400 text-sm mt-2">
+          <p
+            className={`text-sm mt-2 ${
+              status === "Completada"
+                ? "text-slate-500"
+                : "text-slate-400"
+            }`}
+          >
             {description}
           </p>
 
         </div>
 
         <span
-          className={`${priorityStyles[priority]} text-xs px-3 py-1 rounded-full`}>
+          className={`${priorityStyles[priority]} text-xs px-3 py-1 rounded-full`}
+        >
           {priority}
         </span>
 
@@ -51,12 +65,15 @@ function TaskCard({
         <button
           onClick={() => onComplete(id)}
           disabled={status === "Completada"}
-          className={`text-sm ${status === "Completada"
+          className={`text-sm ${
+            status === "Completada"
               ? "text-slate-500 cursor-not-allowed"
               : "text-lime-400 hover:text-lime-300"
-            }`}
+          }`}
         >
-          {status === "Completada" ? "Completada" : "Completar"}
+          {status === "Completada"
+            ? "Completada"
+            : "Completar"}
         </button>
 
       </div>
