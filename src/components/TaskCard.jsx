@@ -1,16 +1,60 @@
+import Swal from "sweetalert2";
+
 function TaskCard({
   id,
   title,
   description,
   priority,
+  dueDate,
   status,
   onComplete,
+  onDelete,
 }) {
 
   const priorityStyles = {
     Alta: "bg-red-500/20 text-red-400",
     Media: "bg-yellow-500/20 text-yellow-400",
     Baja: "bg-green-500/20 text-green-400",
+  };
+
+  const today = new Date();
+  const taskDate = new Date(dueDate);
+
+  const isOverdue =
+    taskDate < today && status !== "Completada";
+
+  const handleDelete = () => {
+
+    Swal.fire({
+      title: "¿Eliminar tarea?",
+      text: "Esta acción no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#84cc16",
+      cancelButtonColor: "#ef4444",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+      background: "#0f172a",
+      color: "#ffffff",
+    }).then((result) => {
+
+      if (result.isConfirmed) {
+
+        onDelete(id);
+
+        Swal.fire({
+          title: "Eliminada",
+          text: "La tarea fue eliminada correctamente.",
+          icon: "success",
+          confirmButtonColor: "#84cc16",
+          background: "#0f172a",
+          color: "#ffffff",
+        });
+
+      }
+
+    });
+
   };
 
   return (
@@ -46,6 +90,30 @@ function TaskCard({
             {description}
           </p>
 
+          <div className="mt-4 space-y-2">
+
+            <p className="text-xs text-slate-500">
+              Fecha límite: {dueDate}
+            </p>
+
+            {isOverdue && (
+
+              <div className="bg-red-500/10 border border-red-500 rounded-xl p-3">
+
+                <p className="text-red-400 text-xs font-medium">
+                  ⚠ Esta tarea está atrasada.
+                </p>
+
+                <p className="text-slate-400 text-xs mt-1">
+                  ¿Qué necesitas para completar esta tarea?
+                </p>
+
+              </div>
+
+            )}
+
+          </div>
+
         </div>
 
         <span
@@ -62,19 +130,30 @@ function TaskCard({
           {status}
         </span>
 
-        <button
-          onClick={() => onComplete(id)}
-          disabled={status === "Completada"}
-          className={`text-sm ${
-            status === "Completada"
-              ? "text-slate-500 cursor-not-allowed"
-              : "text-lime-400 hover:text-lime-300"
-          }`}
-        >
-          {status === "Completada"
-            ? "Completada"
-            : "Completar"}
-        </button>
+        <div className="flex gap-4">
+
+          <button
+            onClick={() => onComplete(id)}
+            disabled={status === "Completada"}
+            className={`text-sm ${
+              status === "Completada"
+                ? "text-slate-500 cursor-not-allowed"
+                : "text-lime-400 hover:text-lime-300"
+            }`}
+          >
+            {status === "Completada"
+              ? "Completada"
+              : "Completar"}
+          </button>
+
+          <button
+            onClick={handleDelete}
+            className="text-red-400 hover:text-red-300 text-sm"
+          >
+            Eliminar
+          </button>
+
+        </div>
 
       </div>
 
