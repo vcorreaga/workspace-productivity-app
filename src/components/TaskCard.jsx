@@ -9,6 +9,7 @@ function TaskCard({
   status,
   onComplete,
   onDelete,
+  onEdit,
 }) {
 
   const priorityStyles = {
@@ -21,7 +22,8 @@ function TaskCard({
   const taskDate = new Date(dueDate);
 
   const isOverdue =
-    taskDate < today && status !== "Completada";
+    taskDate < today &&
+    status !== "Completada";
 
   const handleDelete = () => {
 
@@ -58,6 +60,7 @@ function TaskCard({
   };
 
   return (
+
     <div
       className={`border rounded-2xl p-5 transition-all ${
         status === "Completada"
@@ -105,7 +108,7 @@ function TaskCard({
                 </p>
 
                 <p className="text-slate-400 text-xs mt-1">
-                  ¿Qué necesitas para completar esta tarea?
+                  ¿Qué necesitas para completarla?
                 </p>
 
               </div>
@@ -133,6 +136,20 @@ function TaskCard({
         <div className="flex gap-4">
 
           <button
+            onClick={() => onEdit({
+              id,
+              title,
+              description,
+              priority,
+              dueDate,
+              status,
+            })}
+            className="text-blue-400 hover:text-blue-300 text-sm"
+          >
+            Editar
+          </button>
+
+          <button
             onClick={() => onComplete(id)}
             disabled={status === "Completada"}
             className={`text-sm ${
@@ -158,6 +175,7 @@ function TaskCard({
       </div>
 
     </div>
+
   );
 }
 

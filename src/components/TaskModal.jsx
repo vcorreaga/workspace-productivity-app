@@ -1,28 +1,52 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-function TaskModal({ onClose, onAddTask }) {
+function TaskModal({
+    onClose,
+    onAddTask,
+    editingTask,
+}) {
 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [priority, setPriority] = useState("Media");
     const [dueDate, setDueDate] = useState("");
 
+    useEffect(() => {
+
+        if (editingTask) {
+
+            setTitle(editingTask.title);
+            setDescription(editingTask.description);
+            setPriority(editingTask.priority);
+            setDueDate(editingTask.dueDate);
+
+        }
+
+    }, [editingTask]);
+
     const handleSubmit = (e) => {
 
         e.preventDefault();
 
         if (!title || !description || !dueDate) {
+
             alert("Debes completar todos los campos");
+
             return;
+
         }
 
         const newTask = {
-            id: Date.now(),
+            id: editingTask
+                ? editingTask.id
+                : Date.now(),
             title,
             description,
             priority,
             dueDate,
-            status: "Pendiente",
+            status: editingTask
+                ? editingTask.status
+                : "Pendiente",
         };
 
         onAddTask(newTask);
@@ -33,9 +57,11 @@ function TaskModal({ onClose, onAddTask }) {
         setDueDate("");
 
         onClose();
+
     };
 
     return (
+
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
 
             <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl p-8">
@@ -43,7 +69,11 @@ function TaskModal({ onClose, onAddTask }) {
                 <div className="flex items-center justify-between">
 
                     <h2 className="text-2xl font-bold text-white">
-                        Nueva tarea
+
+                        {editingTask
+                            ? "Editar tarea"
+                            : "Nueva tarea"}
+
                     </h2>
 
                     <button
@@ -70,7 +100,9 @@ function TaskModal({ onClose, onAddTask }) {
                             type="text"
                             placeholder="Escribe el título"
                             value={title}
-                            onChange={(e) => setTitle(e.target.value)}
+                            onChange={(e) =>
+                                setTitle(e.target.value)
+                            }
                             className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-lime-400"
                         />
 
@@ -86,7 +118,9 @@ function TaskModal({ onClose, onAddTask }) {
                             rows="4"
                             placeholder="Describe la tarea"
                             value={description}
-                            onChange={(e) => setDescription(e.target.value)}
+                            onChange={(e) =>
+                                setDescription(e.target.value)
+                            }
                             className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-lime-400 resize-none"
                         ></textarea>
 
@@ -100,12 +134,24 @@ function TaskModal({ onClose, onAddTask }) {
 
                         <select
                             value={priority}
-                            onChange={(e) => setPriority(e.target.value)}
+                            onChange={(e) =>
+                                setPriority(e.target.value)
+                            }
                             className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-lime-400"
                         >
-                            <option>Alta</option>
-                            <option>Media</option>
-                            <option>Baja</option>
+
+                            <option>
+                                Alta
+                            </option>
+
+                            <option>
+                                Media
+                            </option>
+
+                            <option>
+                                Baja
+                            </option>
+
                         </select>
 
                     </div>
@@ -119,7 +165,9 @@ function TaskModal({ onClose, onAddTask }) {
                         <input
                             type="date"
                             value={dueDate}
-                            onChange={(e) => setDueDate(e.target.value)}
+                            onChange={(e) =>
+                                setDueDate(e.target.value)
+                            }
                             className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-lime-400"
                         />
 
@@ -129,7 +177,11 @@ function TaskModal({ onClose, onAddTask }) {
                         type="submit"
                         className="w-full bg-lime-400 hover:bg-lime-300 text-slate-950 font-semibold py-3 rounded-xl transition-all"
                     >
-                        Crear tarea
+
+                        {editingTask
+                            ? "Guardar cambios"
+                            : "Crear tarea"}
+
                     </button>
 
                 </form>
@@ -137,6 +189,7 @@ function TaskModal({ onClose, onAddTask }) {
             </div>
 
         </div>
+
     );
 }
 

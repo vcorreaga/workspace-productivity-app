@@ -1,7 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import TaskCard from "../components/TaskCard";
 import TaskModal from "../components/TaskModal";
+
+import {
+    getTasks,
+    createTask,
+    updateTask,
+    deleteTask,
+} from "../services/taskService";
 
 function Dashboard() {
 
@@ -9,68 +17,106 @@ function Dashboard() {
 
     const user = JSON.parse(localStorage.getItem("user"));
 
+    const [tasks, setTasks] = useState([]);
+
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const [editingTask, setEditingTask] = useState(null);
 
     const [filter, setFilter] = useState("Todas");
 
-    const [tasks, setTasks] = useState(() => {
+    useEffect(() => {
 
-        const savedTasks = localStorage.getItem("tasks");
+        loadTasks();
 
-        return savedTasks
-            ? JSON.parse(savedTasks)
-            : [
-                {
-                    id: 1,
-                    title: "Diseñar interfaz del dashboard",
-                    description:
-                        "Crear estructura visual organizada para mejorar la experiencia del usuario.",
-                    priority: "Alta",
-                    dueDate: "2026-05-30",
-                    status: "Pendiente",
-                },
-                {
-                    id: 2,
-                    title: "Organizar flujo de tareas",
-                    description:
-                        "Definir prioridades y estructura visual del sistema de productividad.",
-                    priority: "Media",
-                    dueDate: "2026-05-28",
-                    status: "En proceso",
-                },
-            ];
-    });
+    }, []);
 
-    const handleAddTask = (newTask) => {
-        setTasks([...tasks, newTask]);
+    const loadTasks = async () => {
+
+        try {
+
+            const data = await getTasks();
+
+            setTasks(data);
+
+        } catch (error) {
+
+            console.error(error);
+
+        }
+
     };
 
-    const handleCompleteTask = (id) => {
+    const handleAddTask = async (newTask) => {
 
-        const updatedTasks = tasks.map((task) => {
+        try {
 
-            if (task.id === id) {
-                return {
-                    ...task,
-                    status: "Completada",
-                };
+            if (editingTask) {
+
+                await updateTask(
+                    editingTask.id,
+                    newTask
+                );
+
+                setEditingTask(null);
+
+            } else {
+
+                await createTask(newTask);
+
             }
 
-            return task;
+            loadTasks();
 
-        });
+        } catch (error) {
 
-        setTasks(updatedTasks);
+            console.error(error);
+
+        }
 
     };
 
-    const handleDeleteTask = (id) => {
+    const handleCompleteTask = async (id) => {
 
-        const updatedTasks = tasks.filter(
-            (task) => task.id !== id
-        );
+        try {
 
-        setTasks(updatedTasks);
+            const taskToUpdate = tasks.find(
+                (task) => task.id === id
+            );
+
+            const updatedTask = {
+                ...taskToUpdate,
+                status: "Completada",
+            };
+
+            await updateTask(
+                id,
+                updatedTask
+            );
+
+            loadTasks();
+
+        } catch (error) {
+
+            console.error(error);
+
+        }
+
+    };
+
+    const handleDeleteTask = async (id) => {
+
+        try {
+
+            await deleteTask(id);
+
+            loadTasks();
+
+        } catch (error) {
+
+            console.error(error);
+
+        }
 
     };
 
@@ -82,24 +128,9 @@ function Dashboard() {
 
     };
 
-    useEffect(() => {
-
-        localStorage.setItem(
-            "tasks",
-            JSON.stringify(tasks)
-        );
-
-    }, [tasks]);
-
     const completedTasks = tasks.filter(
         (task) => task.status === "Completada"
     ).length;
-
-    const progress = tasks.length
-        ? Math.round(
-            (completedTasks / tasks.length) * 100
-        )
-        : 0;
 
     const pendingTasks = tasks.filter(
         (task) => task.status !== "Completada"
@@ -120,6 +151,12 @@ function Dashboard() {
         );
 
     }).length;
+
+    const progress = tasks.length
+        ? Math.round(
+            (completedTasks / tasks.length) * 100
+        )
+        : 0;
 
     const filteredTasks = tasks.filter((task) => {
 
@@ -150,6 +187,54 @@ function Dashboard() {
         return true;
 
     });
+
+    const getMotivationalMessage = () => {
+
+        if (overdueTasks > 0) {
+
+            return "Tienes tareas atrasadas. ¿Qué necesitas para retomarlas y avanzar nuevamente?";
+
+        }
+
+        if (completedTasks >= 1 && pendingTasks >= 1) {
+
+            return "Excelente trabajo. Ya lograste avanzar en algunas tareas, continuemos con las siguientes.";
+
+        }
+
+        if (completedTasks >= 3) {
+
+            return "Gran avance hoy. Mantener constancia también hace parte del progreso.";
+
+        }
+
+        if (tasks.length === 0) {
+
+            return "No tienes tareas pendientes. Buen momento para planificar nuevas metas o actividades importantes.";
+
+        }
+
+        if (pendingTasks >= 5) {
+
+            return "Hay varias tareas pendientes. Prioriza una antes de comenzar nuevas actividades.";
+
+        }
+
+        if (highPriorityTasks >= 3) {
+
+            return "Tienes varias tareas de prioridad alta. Organiza tu enfoque paso a paso.";
+
+        }
+
+        if (progress === 100 && tasks.length > 0) {
+
+            return "Completaste todas tus tareas. Excelente trabajo y compromiso.";
+
+        }
+
+        return "Mantén enfoque en las tareas más importantes del día.";
+
+    };
 
     return (
 
@@ -295,47 +380,13 @@ function Dashboard() {
                             </div>
 
                             <button
-                                onClick={() => setIsModalOpen(true)}
+                                onClick={() => {
+                                    setEditingTask(null);
+                                    setIsModalOpen(true);
+                                }}
                                 className="bg-lime-400 hover:bg-lime-300 text-slate-950 px-5 py-3 rounded-xl font-semibold transition-all"
                             >
                                 + Nueva tarea
-                            </button>
-
-                        </div>
-
-                        <div className="flex gap-3 mt-6">
-
-                            <button
-                                onClick={() => setFilter("Todas")}
-                                className={`px-4 py-2 rounded-xl text-sm ${
-                                    filter === "Todas"
-                                        ? "bg-lime-400 text-slate-950"
-                                        : "bg-slate-800 text-white"
-                                }`}
-                            >
-                                Todas
-                            </button>
-
-                            <button
-                                onClick={() => setFilter("Pendientes")}
-                                className={`px-4 py-2 rounded-xl text-sm ${
-                                    filter === "Pendientes"
-                                        ? "bg-lime-400 text-slate-950"
-                                        : "bg-slate-800 text-white"
-                                }`}
-                            >
-                                Pendientes
-                            </button>
-
-                            <button
-                                onClick={() => setFilter("Completadas")}
-                                className={`px-4 py-2 rounded-xl text-sm ${
-                                    filter === "Completadas"
-                                        ? "bg-lime-400 text-slate-950"
-                                        : "bg-slate-800 text-white"
-                                }`}
-                            >
-                                Completadas
                             </button>
 
                         </div>
@@ -354,6 +405,10 @@ function Dashboard() {
                                     status={task.status}
                                     onComplete={handleCompleteTask}
                                     onDelete={handleDeleteTask}
+                                    onEdit={(task) => {
+                                        setEditingTask(task);
+                                        setIsModalOpen(true);
+                                    }}
                                 />
 
                             ))}
@@ -398,11 +453,11 @@ function Dashboard() {
                         <div className="mt-8 bg-slate-800 rounded-2xl p-5 border border-slate-700">
 
                             <h3 className="text-lg font-semibold">
-                                Prioridad del día
+                                Estado del día
                             </h3>
 
-                            <p className="text-slate-400 mt-3 text-sm">
-                                Mantén enfoque en las tareas más importantes antes de comenzar nuevas actividades.
+                            <p className="text-slate-400 mt-3 text-sm leading-relaxed">
+                                {getMotivationalMessage()}
                             </p>
 
                         </div>
@@ -416,10 +471,12 @@ function Dashboard() {
             {isModalOpen && (
 
                 <TaskModal
-                    onClose={() =>
-                        setIsModalOpen(false)
-                    }
+                    onClose={() => {
+                        setIsModalOpen(false);
+                        setEditingTask(null);
+                    }}
                     onAddTask={handleAddTask}
+                    editingTask={editingTask}
                 />
 
             )}
