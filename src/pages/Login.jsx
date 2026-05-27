@@ -9,10 +9,13 @@ function Login() {
     const [department, setDepartment] = useState("");
 
     const handleLogin = (e) => {
+
         e.preventDefault();
 
         if (!username || !department) {
+
             alert("Debes completar todos los campos");
+
             return;
         }
 
@@ -21,13 +24,19 @@ function Login() {
             department,
         };
 
-        localStorage.setItem("user", JSON.stringify(userData));
+        localStorage.setItem(
+            "user",
+            JSON.stringify(userData)
+        );
 
         navigate("/tablero");
+
     };
 
     return (
+
         <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
+
             <div className="w-full max-w-md bg-slate-900 p-8 rounded-2xl shadow-lg border border-slate-800">
 
                 <h1 className="text-3xl font-bold text-white text-center">
@@ -38,37 +47,79 @@ function Login() {
                     Organiza tu día con claridad y enfoque
                 </p>
 
-                <form onSubmit={handleLogin} className="space-y-5">
+                <form
+                    onSubmit={handleLogin}
+                    className="space-y-5"
+                >
 
                     <div>
-                        <label className="block text-slate-300 mb-2">
+
+                        <label
+                            htmlFor="username"
+                            className="block text-slate-300 mb-2"
+                        >
                             Nombre de usuario
                         </label>
 
                         <input
+                            id="username"
+                            name="username"
                             type="text"
                             placeholder="Ingresa tu nombre"
                             value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            onChange={(e) =>
+                                setUsername(e.target.value)
+                            }
                             className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-lime-400"
                         />
+
                     </div>
 
                     <div>
-                        <label className="block text-slate-300 mb-2">
+
+                        <label
+                            htmlFor="department"
+                            className="block text-slate-300 mb-2"
+                        >
                             Departamento
                         </label>
 
                         <select
+                            id="department"
+                            name="department"
                             value={department}
-                            onChange={(e) => setDepartment(e.target.value)}
+                            onChange={(e) =>
+                                setDepartment(e.target.value)
+                            }
                             className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-lime-400"
                         >
-                            <option>Selecciona un departamento</option>
-                            <option>Desarrollo</option>
-                            <option>Diseño</option>
-                            <option>Marketing</option>
+
+                            <option value="">
+                                Selecciona un área
+                            </option>
+
+                            <option>
+                                Contabilidad
+                            </option>
+
+                            <option>
+                                Comercial
+                            </option>
+
+                            <option>
+                                Mercadeo
+                            </option>
+
+                            <option>
+                                T.I
+                            </option>
+
+                            <option>
+                                Atención al cliente
+                            </option>
+
                         </select>
+
                     </div>
 
                     <button
@@ -79,8 +130,11 @@ function Login() {
                     </button>
 
                 </form>
+
             </div>
+
         </div>
+
     );
 }
 
