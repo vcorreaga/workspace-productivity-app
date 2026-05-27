@@ -37,6 +37,13 @@ El proyecto también busca transmitir una visión más intuitiva sobre el cumpli
 
 ---
 
+## Aplicación desplegada
+
+La aplicación se encuentra desplegada públicamente en Vercel:
+
+🔗 Vercel:
+https://workspace-productivity-app.vercel.app/
+
 # Tecnologías utilizadas
 
 - React
@@ -51,7 +58,7 @@ El proyecto también busca transmitir una visión más intuitiva sobre el cumpli
 
 ---
 
-# 🔗 API Mockeada
+# API Mockeada
 
 La aplicación utiliza MockAPI para simular una API RESTful real y permitir la persistencia de tareas mediante operaciones CRUD.
 
