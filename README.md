@@ -49,6 +49,25 @@ El proyecto también busca transmitir una visión más intuitiva sobre el cumpli
 
 ---
 
+---
+
+# 🔗 API Mockeada
+
+La aplicación utiliza MockAPI para simular una API RESTful real y permitir la persistencia de tareas mediante operaciones CRUD.
+
+Endpoint utilizado:
+
+https://6a1659dd1b90031f81b0eefb.mockapi.io/tasks
+
+Operaciones implementadas:
+
+- GET → Obtener tareas
+- POST → Crear tareas
+- PUT → Editar tareas
+- DELETE → Eliminar tareas
+
+---
+
 # Instalación y ejecución
 
 Clonar repositorio:
